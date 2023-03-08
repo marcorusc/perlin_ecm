@@ -111,11 +111,6 @@
 		<SVG>
 			<interval units="min">30</interval>
 			<enable>true</enable>
-      	<plot_substrate enabled="true">
-        <substrate>ECM_collagen</substrate>
-        <min_conc>0.0</min_conc>
-        <max_conc>0.1</max_conc>
-      </plot_substrate>
 		</SVG>
 		
 		<legacy_data>
@@ -295,13 +290,13 @@
 				<secretion>
                     <substrate name="ECM_collagen">
                         <secretion_rate units="1/min">0</secretion_rate>
-                        <secretion_target units="substrate density">0</secretion_target>
+                        <secretion_target units="substrate density">1.0</secretion_target>
                         <uptake_rate units="1/min">00</uptake_rate>
                         <net_export_rate units="total substrate/min">0</net_export_rate>
                     </substrate>
                     <substrate name="ECM_fibrin">
                         <secretion_rate units="1/min">0.0</secretion_rate>
-                        <secretion_target units="substrate density">0.0</secretion_target>
+                        <secretion_target units="substrate density">1.0</secretion_target>
                         <uptake_rate units="1/min">0.0</uptake_rate>
                         <net_export_rate units="total substrate/min">0.0</net_export_rate>
                     </substrate>
@@ -309,7 +304,7 @@
 
 			</phenotype>
 			<custom_data>  
-				<sample units="dimensionless" conserved="false">1.0</sample>
+				<integrin units="dimensionless" conserved="false">0.5</integrin>
 			</custom_data>
 		</cell_definition>
 	</cell_definitions>
@@ -329,6 +324,12 @@
 		
 		<number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">5</number_of_cells>
 		<substrate_file type="string" units="none" description="">./config/initialConditions.mat</substrate_file>
+		<max_interaction_factor type="double" units="none" description="">1.2</max_interaction_factor>
+		<cell_ecm1_repulsion type="double" units="none" description="">15.0</cell_ecm1_repulsion>
+        <ecm1_threshold type="double" units="none" description="">0.1</ecm1_threshold>
+        <secretion_probability type="double" units="none" description="">0.5</secretion_probability>
+        <ecm1_uptake type="double" units="none" description="">1.0</ecm1_uptake>
+        <ecm2_secretion type="double" units="none" description="">1.0</ecm2_secretion>
 	</user_parameters>
 	
 </PhysiCell_settings>

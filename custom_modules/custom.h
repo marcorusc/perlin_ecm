@@ -90,4 +90,13 @@ void custom_function( Cell* pCell, Phenotype& phenotype , double dt );
 
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt ); 
 
+void ecm_function(Cell *pCell, Phenotype &phenotype, double dt);
+
+/* Calculate repulsion/adhesion between agent and ecm according to its local density */
+void add_ecm_interaction(Cell* pC, int index_ecm, int index_voxel );
+
+void custom_update_velocity( Cell* pCell, Phenotype& phenotype, double dt);
+
+void custom_update_velocity( Cell* pCell, Phenotype& phenotype, double dt);
+
 bool read_custom_microenvironment_from_matlab( std::string mat_filename );
