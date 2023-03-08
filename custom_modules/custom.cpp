@@ -138,18 +138,21 @@ void setup_microenvironment( void )
 	// extra Dirichlet nodes here. 
 
 	std::string mat_filename = parameters.strings("substrate_file");
-
-	read_microenvironment_from_matlab(mat_filename);
 	
 	// initialize BioFVM 
 	
 	initialize_microenvironment(); 	
 	
+	read_custom_microenvironment_from_matlab(mat_filename);
+
 	return; 
 }
 
 void setup_tissue( void )
 {
+	// for(int n=0 ; n < microenvironment.number_of_voxels() ; n++){
+	// 	std::cout << microenvironment(n) << std::endl;
+	// }
 	double Xmin = microenvironment.mesh.bounding_box[0]; 
 	double Ymin = microenvironment.mesh.bounding_box[1]; 
 	double Zmin = microenvironment.mesh.bounding_box[2]; 
@@ -207,7 +210,7 @@ void custom_function( Cell* pCell, Phenotype& phenotype , double dt )
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt )
 { return; } 
 
-bool read_microenvironment_from_matlab( std::string mat_filename )
+bool read_custom_microenvironment_from_matlab( std::string mat_filename )
 {
 	std::cout << std::endl << "Attempting to load the microenvironment from " << mat_filename << " ... " << std::endl; 
 
@@ -240,10 +243,20 @@ bool read_microenvironment_from_matlab( std::string mat_filename )
 		return false; 
 	}
 
+	std::cout << num_rows << std::endl;
+
+	std::cout << num_cols << std::endl;
+	int ecm_index = microenvironment.find_density_index("ECM_collagen");
 	for( int n=0 ; n < number_of_mat_voxels ; n++ )
 	{
+		std::cout << microenvironment(n) << std::endl;
+
+		std::cout << mat[5][n] << std::endl;
 		for( int k=4; k < num_rows ; k++ )
-		{ microenvironment(n)[k-4] = mat[k][n]; }
+		{ 
+			microenvironment(n)[k-4] = mat[k][n]; 
+			}
+		microenvironment.density_vector(n)[ecm_index] = mat[5][n];
 	}
 
 	std::cout << "done!" << std::endl << std::endl; 

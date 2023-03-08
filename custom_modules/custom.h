@@ -90,4 +90,4 @@ void custom_function( Cell* pCell, Phenotype& phenotype , double dt );
 
 void contact_function( Cell* pMe, Phenotype& phenoMe , Cell* pOther, Phenotype& phenoOther , double dt ); 
 
-bool read_microenvironment_from_matlab( std::string mat_filename );
+bool read_custom_microenvironment_from_matlab( std::string mat_filename );
