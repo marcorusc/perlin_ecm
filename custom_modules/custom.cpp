@@ -144,6 +144,7 @@ void setup_microenvironment( void )
 	initialize_microenvironment(); 	
 	
 	read_custom_microenvironment_from_matlab(mat_filename);
+	add_low_cut();
 
 	return; 
 }
@@ -416,9 +417,23 @@ bool read_custom_microenvironment_from_matlab( std::string mat_filename )
 		{ 
 			microenvironment(n)[k-4] = mat[k][n]; 
 			}
-		microenvironment.density_vector(n)[ecm_index] = mat[5][n];
+		//microenvironment.density_vector(n)[ecm_index] = mat[5][n];
 	}
 
 	std::cout << "done!" << std::endl << std::endl; 
 	return true; 
+}
+
+void add_low_cut(){
+
+	int ecm_index = microenvironment.find_density_index("ECM_collagen");
+	double low_cut = PhysiCell::parameters.doubles("low_cut");
+	for( int n=0 ; n < microenvironment.number_of_voxels() ; n++ )
+	{
+		if(microenvironment.density_vector(n)[ecm_index] < low_cut){
+
+			microenvironment.density_vector(n)[ecm_index] = 0;
+		}
+		
+	}
 }

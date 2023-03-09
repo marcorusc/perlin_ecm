@@ -330,6 +330,8 @@
         <secretion_probability type="double" units="none" description="">0.5</secretion_probability>
         <ecm1_uptake type="double" units="none" description="">1.0</ecm1_uptake>
         <ecm2_secretion type="double" units="none" description="">1.0</ecm2_secretion>
+		<low_cut type="double" units="none" description="">0.5</low_cut>
+
 	</user_parameters>
 	
 </PhysiCell_settings>

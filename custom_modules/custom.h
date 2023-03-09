@@ -100,3 +100,5 @@ void custom_update_velocity( Cell* pCell, Phenotype& phenotype, double dt);
 void custom_update_velocity( Cell* pCell, Phenotype& phenotype, double dt);
 
 bool read_custom_microenvironment_from_matlab( std::string mat_filename );
+
+void add_low_cut();
