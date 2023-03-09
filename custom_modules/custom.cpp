@@ -175,20 +175,46 @@ void setup_tissue( void )
 	// create some of each type of cell 
 	
 	Cell* pC;
-	
-	for( int k=0; k < cell_definitions_by_index.size() ; k++ )
-	{
-		Cell_Definition* pCD = cell_definitions_by_index[k]; 
-		std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl; 
-		for( int n = 0 ; n < parameters.ints("number_of_cells") ; n++ )
+	if(parameters.strings("place_cell_in_empty_spots") != "true"){
+		for( int k=0; k < cell_definitions_by_index.size() ; k++ )
 		{
-			std::vector<double> position = {0,0,0}; 
-			position[0] = Xmin + UniformRandom()*Xrange; 
-			position[1] = Ymin + UniformRandom()*Yrange; 
-			position[2] = Zmin + UniformRandom()*Zrange; 
-			
-			pC = create_cell( *pCD ); 
-			pC->assign_position( position );
+			Cell_Definition* pCD = cell_definitions_by_index[k]; 
+			std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl; 
+			for( int n = 0 ; n < parameters.ints("number_of_cells") ; n++ )
+			{
+				std::vector<double> position = {0,0,0}; 
+				position[0] = Xmin + UniformRandom()*Xrange; 
+				position[1] = Ymin + UniformRandom()*Yrange; 
+				position[2] = Zmin + UniformRandom()*Zrange; 
+				
+				pC = create_cell( *pCD ); 
+				pC->assign_position( position );
+			}
+		}
+	}
+	else{
+		
+		for( int n=0 ; n < microenvironment.number_of_voxels() ; n++ )
+		{
+			auto current_voxel = microenvironment.voxels(n);
+			int ecm_index = microenvironment.find_density_index("ECM_collagen");
+			double ecm_dens = microenvironment.density_vector(n)[ecm_index];
+			double r = UniformRandom();
+			if(ecm_dens == 0 && r > parameters.doubles("placing_cell_probability")){
+
+				for( int k=0; k < cell_definitions_by_index.size() ; k++ ) // watch out! if you have more than one cell type, you will position two cell in the same place and this is wrong!
+				{
+					Cell_Definition* pCD = cell_definitions_by_index[k]; 
+					std::cout << "Placing cells of type " << pCD->name << " ... " << std::endl; 
+					std::vector<double> position = {0,0,0}; 
+					position[0] = current_voxel.center[0]; 
+					position[1] = current_voxel.center[1]; 
+					position[2] = current_voxel.center[2]; 
+					
+					pC = create_cell( *pCD ); 
+					pC->assign_position( position );
+				}
+			}
 		}
 	}
 	std::cout << std::endl; 
