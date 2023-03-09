@@ -118,7 +118,7 @@ void create_cell_types( void )
 	*/ 
 	
 	cell_defaults.functions.update_phenotype = phenotype_function; 
-	cell_defaults.functions.custom_cell_rule = custom_function; 
+	cell_defaults.functions.custom_cell_rule = ecm_function; 
 	cell_defaults.functions.contact_function = contact_function; 
 	
 	/*

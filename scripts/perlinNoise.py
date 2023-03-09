@@ -22,7 +22,7 @@ ymax = 300 + dy//2          #maximum y-value
 zmax = 0 + dz//2            #maximum z-value
 octaves = 5                 #peak/trough coarseness parameter
 seed = 1                    #random seed
-substrateNum = 2            #number of substrate matrices required 
+substrateNum = 3            #number of substrate matrices required 
 uniformVal = 0.5            #concentration for uniform substrate
 
 #Rotate the generated array to match PhysiCell input
@@ -37,15 +37,19 @@ noise = PerlinNoise(octaves, seed)
 xpix, ypix, zpix = int((xmax - xmin) / dx), int((ymax - ymin) / dy), int((zmax - zmin) / dz)
 
 #Zero substrate matrix
-substrate_1 = np.full((xpix, ypix, zpix), uniformVal)
+substrate_1 = np.full((xpix, ypix, zpix), 0)
 
 #Array to hold noise values
 substrate_2 = [[[(noise([k / zpix, j / ypix, i / xpix]) + 1) / 2 for k in range(zpix)] for j \
 	             in range(ypix)] for i in range(xpix)]
 	             
+#Array to hold noise values
+substrate_3 = np.full((xpix, ypix, zpix), 38)
+	             
 #Rotate substrates to match PhysiCell
 substrate_2 = rotated(substrate_2)
 substrate_1 = rotated(substrate_1)
+substrate_3 = rotated(substrate_3)
 
 #Display generate noise array 
 plt.imshow(substrate_2, cmap='gray')
@@ -53,7 +57,7 @@ plt.colorbar()
 plt.show()
 
 #Generate data matrix for output
-dataArray = np.zeros((3+1+2, xpix * ypix * zpix))
+dataArray = np.zeros((3+1+substrateNum, xpix * ypix * zpix))
 
 #Insert substrate, noise information into data matrix
 for k in range(zpix): 
@@ -67,6 +71,7 @@ for k in range(zpix):
 			#Substrate information 
 			dataArray[5,n] = substrate_1[i][j][k]
 			dataArray[4,n] = substrate_2[i][j][k]
+			dataArray[6,n] = substrate_3[i][j][k]
 				
 savemat(r"../config/initialConditions.mat", {'dataArray': dataArray}, format='4')
 			

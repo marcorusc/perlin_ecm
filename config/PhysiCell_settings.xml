@@ -163,6 +163,15 @@
 			</Dirichlet_options>
 -->
  		</variable>
+
+		<variable name="oxygen" units="mmHg" ID="2">
+			<physical_parameter_set>
+				<diffusion_coefficient units="micron^2/min">6000.0</diffusion_coefficient> <!--later we could add some slowing terms so oxygen diffuse slower in voxel with ECM-->
+				<decay_rate units="1/min">.1</decay_rate> 
+			</physical_parameter_set>
+			<initial_condition units="mmHg">38.0</initial_condition>
+			<Dirichlet_boundary_condition units="mmHg" enabled="true">38.0</Dirichlet_boundary_condition>
+		</variable>
 		
 		<options>
 			<calculate_gradients>true</calculate_gradients>
@@ -277,15 +286,20 @@
 					</options>
 				</mechanics>
 				
-				<motility>  
-					<speed units="micron/min">0.25</speed>
-					<persistence_time units="min">5</persistence_time>
+				<motility>
+					<speed units="micron/min">1.0</speed>
+					<persistence_time units="min">1</persistence_time>
 					<migration_bias units="dimensionless">0.5</migration_bias>
 					<options>
-						<enabled>false</enabled>
-						<use_2D>true</use_2D>
+					<enabled>true</enabled>
+					<use_2D>true</use_2D>
+					<chemotaxis>
+						<enabled>true</enabled>
+						<substrate>ECM_fibrin</substrate>
+						<direction>-1</direction>
+					</chemotaxis>
 					</options>
-				</motility>
+          		</motility>
 				
 				<secretion>
                     <substrate name="ECM_collagen">
@@ -324,15 +338,15 @@
 		
 		<number_of_cells type="int" units="none" description="initial number of cells (for each cell type)">5</number_of_cells>
 		<substrate_file type="string" units="none" description="">./config/initialConditions.mat</substrate_file>
-		<max_interaction_factor type="double" units="none" description="">1.2</max_interaction_factor>
-		<cell_ecm1_repulsion type="double" units="none" description="">15.0</cell_ecm1_repulsion>
+		<max_interaction_factor type="double" units="none" description="">1.1</max_interaction_factor>
+		<cell_ecm1_repulsion type="double" units="none" description="">25.0</cell_ecm1_repulsion>
         <ecm1_threshold type="double" units="none" description="">0.1</ecm1_threshold>
-        <secretion_probability type="double" units="none" description="">0.5</secretion_probability>
+        <secretion_probability type="double" units="none" description="">0.2</secretion_probability>
         <ecm1_uptake type="double" units="none" description="">1.0</ecm1_uptake>
         <ecm2_secretion type="double" units="none" description="">1.0</ecm2_secretion>
 		<low_cut type="double" units="none" description="">0.5</low_cut>
 		<place_cell_in_empty_spots type="string" units="none" description="">true</place_cell_in_empty_spots>
-		<placing_cell_probability type="double" units="none" description="">0.1</placing_cell_probability>
+		<placing_cell_probability type="double" units="none" description="">0.7</placing_cell_probability>
 
 	</user_parameters>
 	
