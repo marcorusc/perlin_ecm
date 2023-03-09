@@ -3,36 +3,53 @@ from perlin_noise import PerlinNoise
 from scipy.io import savemat
 import numpy as np
 
-dx = 20
-dy = 20
-dz = 20
-xmin = -300 - dx//2
-ymin = -300 - dy//2
-zmin = 0 - dz//2
-xmax = 300 + dx//2
-ymax = 300 + dy//2
-zmax = 0 + dz//2
-octaves = 5
-seed = 1
-substrateNum = 1
+'''
+Script currently returns one uniform substrate matrix and one noise 
+matrix. Future versions will increase the adaptability of substrates.
+'''
 
-#Generate Perlin noise matrix and output as MATLAB file
+'''
+Parameters
+'''
+dx = 20                     #x-spacing
+dy = 20                     #y-spacing 
+dz = 20                     #z-spacing
+xmin = -300 - dx//2         #minimum x-value
+ymin = -300 - dy//2         #minimum y-value
+zmin = 0 - dz//2            #minimum z-value
+xmax = 300 + dx//2          #maximum x-value
+ymax = 300 + dy//2          #maximum y-value
+zmax = 0 + dz//2            #maximum z-value
+octaves = 5                 #peak/trough coarseness parameter
+seed = 1                    #random seed
+substrateNum = 2            #number of substrate matrices required 
+uniformVal = 0.5            #concentration for uniform substrate
+
+#Rotate the generated array to match PhysiCell input
+def rotated(array):
+    listOfTuples = zip(*array[::-1])
+    return [list(elem) for elem in listOfTuples]
+
+#Generate Perlin noise matrix 
 noise = PerlinNoise(octaves, seed)
 
-#Convert actual dimensions to indices
+#Convert actual positions to indices
 xpix, ypix, zpix = int((xmax - xmin) / dx), int((ymax - ymin) / dy), int((zmax - zmin) / dz)
 
 #Zero substrate matrix
-substrate_1 = np.zeros((xpix, ypix, zpix))
+substrate_1 = np.full((xpix, ypix, zpix), uniformVal)
 
 #Array to hold noise values
 substrate_2 = [[[(noise([k / zpix, j / ypix, i / xpix]) + 1) / 2 for k in range(zpix)] for j \
 	             in range(ypix)] for i in range(xpix)]
+	             
+#Rotate substrates to match PhysiCell
+substrate_2 = rotated(substrate_2)
+substrate_1 = rotated(substrate_1)
 
 #Display generate noise array 
 plt.imshow(substrate_2, cmap='gray')
 plt.colorbar()
-print(np.min(substrate_2))
 plt.show()
 
 #Generate data matrix for output
@@ -51,6 +68,6 @@ for k in range(zpix):
 			dataArray[5,n] = substrate_1[i][j][k]
 			dataArray[4,n] = substrate_2[i][j][k]
 				
-savemat('initialConditions.mat', {'dataArray': dataArray}, format='4')
+savemat(r"../config/initialConditions.mat", {'dataArray': dataArray}, format='4')
 			
 			
