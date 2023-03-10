@@ -2,28 +2,61 @@ import matplotlib.pyplot as plt
 from perlin_noise import PerlinNoise
 from scipy.io import savemat
 import numpy as np
+import subprocess
+import sys
+
+#Install non-installed package
+def install(package):
+	subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+#Install perlin_noise package
+if not ("perlin_noise" in sys.modules): 
+    print('installing perlin_noise')
+    install("perlin_noise")
+else: 
+    print('perlin_noise already installed')
 
 '''
 Script currently returns one uniform substrate matrix and one noise 
 matrix. Future versions will increase the adaptability of substrates.
 '''
 
+import xml.etree.ElementTree as ET
+tree = ET.parse("../config/PhysiCell_settings.xml")
+root = tree.getroot()
+
 '''
 Parameters
 '''
-dx = 20                     #x-spacing
-dy = 20                     #y-spacing 
-dz = 20                     #z-spacing
-xmin = -300 - dx//2         #minimum x-value
-ymin = -300 - dy//2         #minimum y-value
-zmin = 0 - dz//2            #minimum z-value
-xmax = 300 + dx//2          #maximum x-value
-ymax = 300 + dy//2          #maximum y-value
-zmax = 0 + dz//2            #maximum z-value
-octaves = 5                 #peak/trough coarseness parameter
-seed = 1                    #random seed
-substrateNum = 3            #number of substrate matrices required 
-uniformVal = 0.5            #concentration for uniform substrate
+xmin = int(root[0][0].text) 
+xmax = int(root[0][1].text) 
+ymin = int(root[0][2].text) 
+ymax = int(root[0][3].text) 
+zmin = int(root[0][4].text) 
+zmax = int(root[0][5].text) 
+dx = int(root[0][6].text) 
+dy = int(root[0][7].text) 
+dz = int(root[0][8].text) 
+sub_str = str( (root[5][-2]).attrib)
+for c in sub_str:
+    if c.isdigit():
+        substrate_max_index = c
+substrateNum = int(substrate_max_index) + 1
+
+#collagen_string = "ECM_collagen"
+fibrin_string = "ECM_fibrin" 
+oxygen_string = "oxygen" 
+for child in root[5]:
+    c = str(child.attrib)
+    if oxygen_string in c:
+        oxy_val = float(child[1].text)
+    elif fibrin_string in c: 
+        fibrin_val = float(child[1].text)
+        
+    
+octaves = int(root[-1][-2].text)
+seed = int(root[-1][-1].text)
+
 
 #Rotate the generated array to match PhysiCell input
 def rotated(array):
@@ -37,14 +70,15 @@ noise = PerlinNoise(octaves, seed)
 xpix, ypix, zpix = int((xmax - xmin) / dx), int((ymax - ymin) / dy), int((zmax - zmin) / dz)
 
 #Zero substrate matrix
-substrate_1 = np.full((xpix, ypix, zpix), 0)
+substrate_1 = np.full((xpix, ypix, zpix), fibrin_val)
 
 #Array to hold noise values
-substrate_2 = [[[(noise([k / zpix, j / ypix, i / xpix]) + 1) / 2 for k in range(zpix)] for j \
-	             in range(ypix)] for i in range(xpix)]
+#substrate_2 = [[[(noise([k / zpix, j / ypix, i / xpix]) + 1) / 2 for k in range(zpix)] for j \
+	            # in range(ypix)] for i in range(xpix)]
+substrate_2 = [[[(noise([i / xpix, j / ypix, k / zpix]) + 1) / 2 for k in range(zpix)] for j in range(ypix)] for i in range(xpix)]
 	             
 #Array to hold noise values
-substrate_3 = np.full((xpix, ypix, zpix), 38)
+substrate_3 = np.full((xpix, ypix, zpix), oxy_val)
 	             
 #Rotate substrates to match PhysiCell
 substrate_2 = rotated(substrate_2)
@@ -52,7 +86,8 @@ substrate_1 = rotated(substrate_1)
 substrate_3 = rotated(substrate_3)
 
 #Display generate noise array 
-plt.imshow(substrate_2, cmap='gray')
+plt.imshow(substrate_2[:][:][0], cmap='gray')
+plt.title("Perlin noise at $z=0$")
 plt.colorbar()
 plt.show()
 
