@@ -117,8 +117,8 @@ void create_cell_types( void )
 	   This is a good place to set custom functions. 
 	*/ 
 	
-	cell_defaults.functions.update_phenotype = phenotype_function; 
-	cell_defaults.functions.custom_cell_rule = ecm_function; 
+	cell_defaults.functions.update_phenotype = ecm_function; 
+	cell_defaults.functions.custom_cell_rule = custom_function; 
 	cell_defaults.functions.contact_function = contact_function; 
 	
 	/*
@@ -436,13 +436,13 @@ bool read_custom_microenvironment_from_matlab( std::string mat_filename )
 	int ecm_index = microenvironment.find_density_index("ECM_collagen");
 	for( int n=0 ; n < number_of_mat_voxels ; n++ )
 	{
-		std::cout << microenvironment(n) << std::endl;
 
 		std::cout << mat[5][n] << std::endl;
 		for( int k=4; k < num_rows ; k++ )
 		{ 
 			microenvironment(n)[k-4] = mat[k][n]; 
 			}
+		std::cout << microenvironment(n) << std::endl;
 		//microenvironment.density_vector(n)[ecm_index] = mat[5][n];
 	}
 
